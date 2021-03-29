@@ -18,7 +18,7 @@ from torch.utils.data import DataLoader, random_split
 from torch.utils.tensorboard import SummaryWriter
 from torch.optim import Adam, SGD, Adagrad
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
-from utils import load_yaml, GradualWarmupScheduler
+from utils import load_yaml, preprocess
 from perceiver_pytorch import Perceiver
 
 # Parse arguments
@@ -29,7 +29,7 @@ parser.add_argument("--val-annotations", type=str, default="dataset/kinetics-400
 parser.add_argument("--root-dir", type=str, default="dataset/kinetics-400/train", help="Dataset files root-dir")
 parser.add_argument("--val-root-dir", type=str, default="dataset/kinetics-400/val", help="Dataset files root-dir")
 parser.add_argument("--classes", type=int, default=400, help="Number of classes")
-parser.add_argument("--config", type=str, default='configs/vtn.yaml', help="Config file")
+parser.add_argument("--config", type=str, default='configs/perceiver.yaml', help="Config file")
 
 parser.add_argument("--dataset", choices=['ucf', 'smth', 'kinetics'], default='kinetics')
 parser.add_argument("--weight-path", type=str, default="weights/kinetics/v1", help='Path to save weights')
@@ -57,7 +57,6 @@ cfg = load_yaml(args.config)
 
 # Load model
 model = Perceiver(**vars(cfg))
-preprocess = model.preprocess
 
 if torch.cuda.is_available():
     model = nn.DataParallel(model).cuda()
